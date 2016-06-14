@@ -1,0 +1,103 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+
+<script src='../jquery/dist/jquery.min.js'></script>
+<script src='../moment/min/moment.min.js'></script>
+<script src='../fullcalendar/dist/fullcalendar.min.js'></script>
+
+<link rel="import" href="../fullcalendar-calendar/fullcalendar-theme.html">
+<link rel="import" href="../fullcalendar-calendar/fullcalendar-calendar.html">
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <ee-full-calendar></ee-full-calendar>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="ee-full-calendar">
+  <template>
+    <style>
+      :host {
+      }
+
+      .actions { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+
+      <div class="actions">
+        <div>[[title]]</div>
+      <div>
+        <paper-menu-button>
+          <paper-icon-button icon="event" class="dropdown-trigger"></paper-icon-button>
+          <paper-menu class="dropdown-content" selected="0">
+            <paper-item view="month" on-tap="changeView">Month</paper-item>
+            <paper-item view="basicWeek" on-tap="changeView">Basic week</paper-item>
+            <paper-item view="basicDay" on-tap="changeView">Basic day</paper-item>
+            <paper-item view="agendaWeek" on-tap="changeView">Agenda week</paper-item>
+            <paper-item view="agendaDay" on-tap="changeView">Agenda day</paper-item>
+          </paper-menu>
+        </paper-menu-button>
+
+        <paper-icon-button id="previous" icon="chevron-left" on-transitionend="previous"></paper-icon-button>
+        <paper-icon-button id="next" icon="chevron-right" on-transitionend="next"></paper-icon-button>
+      </div>
+    </div>
+    
+    <fullcalendar-calendar id="calendar"
+      view="month"
+    ></fullcalendar-calendar>
+  
+  </template>
+
+  <script>
+    Polymer({
+      is: 'ee-full-calendar',
+
+      properties: {
+        title: {
+          type: String,
+          value: ''
+        },
+          
+      },
+
+      attached: function() {
+        this.$.calendar.options = {
+          header: false,
+          events: 
+            [
+              { title: 'Discover fullcalendar-calendar', start: moment() },
+              { title: 'Install fullcalendar-calendar', start: moment().add(2, 'day') },
+              { title: 'Play around with fullcalendar-calendar', start: moment().add(4, 'days'), end: moment().add(5, 'days') },
+              { title: 'Star fullcalendar-calendar on Github', start: moment().add(7, 'days'), end: moment().add(7, 'days').add(25, 'minutes') }
+            ]
+          }
+      },
+
+      changeView: function(e) {
+        var view = e.target.attributes.getNamedItem('view').value;
+        this.$.calendar.changeView(view);
+        this.title = view;
+      },
+
+      next: function() {
+        this.$.calendar.next();
+      },
+
+      previous: function() {
+        this.$.calendar.previous();
+      },     
+
+    });
+  </script>
+</dom-module>
