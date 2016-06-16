@@ -7,12 +7,13 @@
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 
-<script src='../jquery/dist/jquery.min.js'></script>
-<script src='../moment/min/moment.min.js'></script>
-<script src='../fullcalendar/dist/fullcalendar.min.js'></script>
+<link rel="import" href="../jquery-214-patched/import-jquery.html">
+<link rel="import" href="../import-momentjs/import-momentjs.html">
+<link rel="import" href="../import-fullcalendar/import-fullcalendar.html">
 
 <link rel="import" href="../fullcalendar-calendar/fullcalendar-theme.html">
 <link rel="import" href="../fullcalendar-calendar/fullcalendar-calendar.html">
+<link rel='stylesheet' href='../fullcalendar/dist/fullcalendar.min.css'/>
 
 <!--
 An element providing a solution to no problem in particular.
@@ -27,13 +28,23 @@ Example:
 
 <dom-module id="ee-full-calendar">
   <template>
-    <style>
+    <style is="fullcalendar-base-theme">
       :host {
+        display: inline-block;
       }
 
-      .actions { display: flex; justify-content: space-between; align-items: center; }
-    </style>
+      .container {
+        position: relative;
+      }
 
+      .actions { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+      }
+
+    </style>
+    <div class="container">
       <div class="actions">
         <div>[[title]]</div>
       <div>
@@ -54,7 +65,9 @@ Example:
     </div>
     
     <fullcalendar-calendar id="calendar"
-      view="month"
+      on-day-click="_dayClicked"
+      on-drop="_dayClicked"
+      on-event-drag-stop="_dayClicked"
     ></fullcalendar-calendar>
   
   </template>
@@ -68,20 +81,39 @@ Example:
           type: String,
           value: ''
         },
-          
-      },
 
-      attached: function() {
-        this.$.calendar.options = {
-          header: false,
-          events: 
-            [
+        events: {
+          type: Array,
+          value: [
               { title: 'Discover fullcalendar-calendar', start: moment() },
               { title: 'Install fullcalendar-calendar', start: moment().add(2, 'day') },
               { title: 'Play around with fullcalendar-calendar', start: moment().add(4, 'days'), end: moment().add(5, 'days') },
               { title: 'Star fullcalendar-calendar on Github', start: moment().add(7, 'days'), end: moment().add(7, 'days').add(25, 'minutes') }
             ]
-          }
+        },      
+      },
+
+      attached: function() {
+        this.$.calendar.options = {
+          header: false,
+          selectable: true,
+          select: function(start, end) {
+            var title = prompt('Event Title:');
+            var eventData;
+            if (title) {
+              eventData = {
+                title: title,
+                start: start,
+                end: end
+              };
+              this.$.calendar._calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
+            }
+            this.$.calendar._calendar.fullCalendar('unselect');
+          }.bind(this),
+          editable: true,
+          eventLimit: true, // allow "more" link when too many events
+          events: this.events
+        }
       },
 
       changeView: function(e) {
@@ -96,7 +128,11 @@ Example:
 
       previous: function() {
         this.$.calendar.previous();
-      },     
+      },
+
+      _dayClicked: function(e) {
+        console.info(e);
+      },                
 
     });
   </script>
