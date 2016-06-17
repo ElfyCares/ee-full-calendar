@@ -11,12 +11,19 @@
 <link rel="import" href="../import-momentjs/import-momentjs.html">
 <link rel="import" href="../import-fullcalendar/import-fullcalendar.html">
 
-<link rel="import" href="../fullcalendar-calendar/fullcalendar-theme.html">
+<link rel="import" href="fullcalendar-theme.html">
 <link rel="import" href="../fullcalendar-calendar/fullcalendar-calendar.html">
-<link rel='stylesheet' href='../fullcalendar/dist/fullcalendar.min.css'/>
 
 <!--
 An element providing a solution to no problem in particular.
+
+Events:
+    [
+      { title: 'Discover fullcalendar-calendar', start: moment() },
+      { title: 'Install fullcalendar-calendar', start: moment().add(2, 'day') },
+      { title: 'Play around with fullcalendar-calendar', start: moment().add(4, 'days'), end: moment().add(5, 'days') },
+      { title: 'Star fullcalendar-calendar on Github', start: moment().add(7, 'days'), end: moment().add(7, 'days').add(25, 'minutes') }
+    ]
 
 Example:
 
@@ -28,7 +35,7 @@ Example:
 
 <dom-module id="ee-full-calendar">
   <template>
-    <style is="fullcalendar-base-theme">
+    <style>
       :host {
         display: inline-block;
       }
@@ -68,6 +75,7 @@ Example:
       on-day-click="_dayClicked"
       on-drop="_dayClicked"
       on-event-drag-stop="_dayClicked"
+      on-select="_dateSelected"
     ></fullcalendar-calendar>
   
   </template>
@@ -77,6 +85,7 @@ Example:
       is: 'ee-full-calendar',
 
       properties: {
+
         title: {
           type: String,
           value: ''
@@ -84,36 +93,36 @@ Example:
 
         events: {
           type: Array,
-          value: [
-              { title: 'Discover fullcalendar-calendar', start: moment() },
-              { title: 'Install fullcalendar-calendar', start: moment().add(2, 'day') },
-              { title: 'Play around with fullcalendar-calendar', start: moment().add(4, 'days'), end: moment().add(5, 'days') },
-              { title: 'Star fullcalendar-calendar on Github', start: moment().add(7, 'days'), end: moment().add(7, 'days').add(25, 'minutes') }
-            ]
+          value: function() { return []; }
         },      
       },
 
       attached: function() {
-        this.$.calendar.options = {
-          header: false,
-          selectable: true,
-          select: function(start, end) {
-            var title = prompt('Event Title:');
-            var eventData;
-            if (title) {
-              eventData = {
-                title: title,
-                start: start,
-                end: end
-              };
-              this.$.calendar._calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
+        var o = {
+              header: false,
+              selectable: true,
+              editable: true,
+              eventLimit: true, // allow "more" link when too many events
+              events: this.events
             }
-            this.$.calendar._calendar.fullCalendar('unselect');
-          }.bind(this),
-          editable: true,
-          eventLimit: true, // allow "more" link when too many events
-          events: this.events
-        }
+        this.applyOptions(o);
+      },
+
+      applyOptions: function(options) {
+        this.$.calendar.options = options;
+      },
+
+      _dateSelected: function(event, detail) {
+        var range = { start: detail.start, end: detail.end };
+        this.fire('select-date', range);
+      },
+
+      unselect: function() {
+        this.$.calendar._calendar.fullCalendar('unselect');
+      },
+
+      insertEvent: function(eventData) {
+        this.$.calendar._calendar.fullCalendar('renderEvent', eventData, true); // stick? = true
       },
 
       changeView: function(e) {
@@ -131,7 +140,7 @@ Example:
       },
 
       _dayClicked: function(e) {
-        console.info(e);
+        this.fire('day-clicked', e);
       },                
 
     });
