@@ -98,6 +98,10 @@ Example:
       },
 
       attached: function() {
+        this.applyOptions();
+      },
+
+      applyOptions: function() {
         var o = {
               header: false,
               selectable: true,
@@ -105,11 +109,7 @@ Example:
               eventLimit: true, // allow "more" link when too many events
               events: this.events
             }
-        this.applyOptions(o);
-      },
-
-      applyOptions: function(options) {
-        this.$.calendar.options = options;
+        this.$.calendar.options = o;
       },
 
       _dateSelected: function(event, detail) {
