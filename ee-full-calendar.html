@@ -58,11 +58,11 @@ Example:
         <paper-menu-button>
           <paper-icon-button icon="event" class="dropdown-trigger"></paper-icon-button>
           <paper-menu class="dropdown-content" selected="0">
-            <paper-item view="month" on-tap="changeView">Month</paper-item>
-            <paper-item view="basicWeek" on-tap="changeView">Basic week</paper-item>
-            <paper-item view="basicDay" on-tap="changeView">Basic day</paper-item>
-            <paper-item view="agendaWeek" on-tap="changeView">Agenda week</paper-item>
-            <paper-item view="agendaDay" on-tap="changeView">Agenda day</paper-item>
+            <paper-item name="Month" view="month" on-tap="changeView">Month</paper-item>
+            <paper-item name="Week" view="basicWeek" on-tap="changeView">Basic week</paper-item>
+            <paper-item name="Day" view="basicDay" on-tap="changeView">Basic day</paper-item>
+            <paper-item name="Agenda Week" view="agendaWeek" on-tap="changeView">Agenda week</paper-item>
+            <paper-item name="Agenda Day" view="agendaDay" on-tap="changeView">Agenda day</paper-item>
           </paper-menu>
         </paper-menu-button>
 
@@ -85,7 +85,6 @@ Example:
       is: 'ee-full-calendar',
 
       properties: {
-
         title: {
           type: String,
           value: ''
@@ -93,7 +92,8 @@ Example:
 
         events: {
           type: Array,
-          value: function() { return []; }
+          value: function() { return []; },
+          observer: 'applyOptions'
         },      
       },
 
@@ -127,8 +127,9 @@ Example:
 
       changeView: function(e) {
         var view = e.target.attributes.getNamedItem('view').value;
+        var name = e.target.attributes.getNamedItem('name').value;
         this.$.calendar.changeView(view);
-        this.title = view;
+        this.title = name;
       },
 
       next: function() {
