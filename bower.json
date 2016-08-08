@@ -28,7 +28,7 @@
     "paper-item": "^1.2.1",
     "paper-menu": "^1.2.2",
     "paper-menu-button": "^1.1.0",
-    "jquery-214-patched": "ElfyCares/jquery-214-patched"
+    "jquery-214-patched": "git@github.com:ElfyCares/jquery-214-patched"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
